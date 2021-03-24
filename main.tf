@@ -39,6 +39,11 @@ resource "helm_release" "appd-crd" {
   }
   
   set {
+    name  = "appd_controller_url"
+    value = var.appd_controller_url
+  }
+  
+  set {
     name  = "appname"
     value = var.app_name
   }
