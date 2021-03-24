@@ -1,6 +1,0 @@
-apiVersion: v2
-name: appd-clusteragent-custom
-description: Custom components for AppD Cluster Agent
-type: application
-version: 1.0.0
-appVersion: 1.0.0
