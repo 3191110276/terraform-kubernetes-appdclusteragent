@@ -4,13 +4,13 @@ metadata:
   name: k8s-cluster-agent
   namespace: {{ .Release.Namespace }}
 spec:
-  controllerUrl: https://{{ .Values.appd_controller_hostname }}:443
+  controllerUrl: {{ .Values.appd_controller_url }}
   account: {{ .Values.appd_account_name }}
   appName: {{ .Values.appname }}
   proxyUrl: {{ .Values.proxy_url }}
   serviceAccountName: appdynamics-cluster-agent
   logLevel: "INFO"
-  image: "docker.io/appdynamics/cluster-agent:20.10.0" #20.11.0
+  image: "docker.io/appdynamics/cluster-agent:20.10.0"
   imageInfo:
     dotnetcore:
       agentMountPath: /opt/appdynamics
@@ -26,29 +26,9 @@ spec:
       imagePullPolicy: IfNotPresent
   instrumentContainer: first
   stdoutLogging: "true"
-  #eventUploadInterval: 8
-  #containerRegistrationInterval: 100
-  #clusterMetricsSyncInterval: 50
-  #metadataSyncInterval: 50
-  #containerBatchSize: 8
-  #podBatchSize: 10
   nsToMonitor: {{ .Values.ns_to_monitor }}
-  instrumentationMethod: Env
-  instrumentationRules:
-    - namespaceRegex: world
-      appName: {{ .Values.appname }}
-      language: java
-      imageInfo:
-        image: "docker.io/appdynamics/java-agent:20.9.0"
-        agentMountPath: /opt/appdynamics
-        imagePullPolicy: "IfNotPresent"
-  nsToInstrumentRegex: "{{ .Values.ns_to_instrument }}"
   appNameStrategy: manual
-  defaultAppname: "{{ .Values.appname }}"
-#  instrumentationMethod: Env
-#  nsToInstrumentRegex: "default"
-#  appNameStrategy: "label"
-#  appNameLabel: "appd-appname"
+  defaultAppname: {{ .Values.appname }}
 ---
 apiVersion: appdynamics.com/v1alpha1
 kind: InfraViz
@@ -56,7 +36,7 @@ metadata:
   name: appd-infraviz
   namespace: {{ .Release.Namespace }}
 spec:
-  controllerUrl: https://{{ .Values.appd_controller_hostname }}:443
+  controllerUrl: {{ .Values.appd_controller_url }}
   image: {{ .Values.registry }}/appd-nodeagent:v1
   account: {{ .Values.appd_account_name }}
   globalAccount: {{ .Values.appd_global_account }}
