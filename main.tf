@@ -100,7 +100,7 @@ rules:
   - apiGroups:
       - appdynamics.com
     resources:
-      - '*'
+      - "*"
       - clusteragents
       - infravizs
       - adams
@@ -226,7 +226,7 @@ rules:
   - apiGroups:
       - appdynamics.com
     resources:
-      - '*'
+      - "*"
       - clusteragents
       - clustercollectors
     verbs:
@@ -297,14 +297,14 @@ kind: PodSecurityPolicy
 metadata:
   name: appdynamics-infraviz
   annotations:
-    seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: "*"
 spec:
   privileged: true
   allowPrivilegeEscalation: true
   allowedCapabilities:
-  - '*'
+  - "*"
   volumes:
-  - '*'
+  - "*"
   hostNetwork: true
   hostIPC: true
   hostPID: true
@@ -312,13 +312,13 @@ spec:
   - min: 0
     max: 65535
   runAsUser:
-    rule: 'RunAsAny'
+    rule: "RunAsAny"
   seLinux:
-    rule: 'RunAsAny'
+    rule: "RunAsAny"
   supplementalGroups:
-    rule: 'RunAsAny'
+    rule: "RunAsAny"
   fsGroup:
-    rule: 'RunAsAny'
+    rule: "RunAsAny"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
