@@ -25,7 +25,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 stringData:
   controller-key: {{ .Values.appd_controller_key }}
-  api-user: {{ .Values.appd_username }}@{{ .Values.appd_account_name }}:{{ .Values.appd_password }}
+  api-user: "{{ .Values.appd_username }}@{{ .Values.appd_account_name }}:{{ .Values.appd_password }}"
 ---
 apiVersion: v1
 kind: ServiceAccount
