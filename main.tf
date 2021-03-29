@@ -380,20 +380,21 @@ roleRef:
   name: appdynamics-infraviz
   apiGroup: rbac.authorization.k8s.io
 ---
-kind: Role
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: appdynamics-infraviz
-  namespace: {{ .Release.Namespace }}
-rules:
-- apiGroups:
-  - extensions
-  resources:
-  - podsecuritypolicies
-  resourceNames:
-  - appdynamics-infraviz
-  verbs:
-  - use
+
+
+resource "kubernetes_role" "appdynamics-infraviz" {
+  metadata {
+    name      = "appdynamics-infraviz"
+    namespace = var.namespace
+  }
+
+  rule {
+    api_groups     = ["extensions"]
+    resources      = ["podsecuritypolicies"]
+    resource_names = ["appdynamics-infraviz"]
+    verbs          = ["use"]
+  }
+}
 
 
 resource "kubernetes_role_binding" "appdynamics-infraviz" {
