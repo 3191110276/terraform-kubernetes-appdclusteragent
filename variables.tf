@@ -36,16 +36,17 @@ variable "account_name" {
   description = "The name of the AppDynamics account. This value can be found in Settings > License > Account > Name."
 }
 
+variable "global_account" {
+  type        = string
+  description = "The name of the global AppDynamics account. This value can be found in Settings > License > Account > Global Account Name."
+}
+
 variable "controller_key" {
   type        = string
   description = "The key used for authorizing with the AppDynamics controller. This value can be found in Settings > License > Account > Access Key."
 }
 
 
-
-
-
-global_account APPD
 
 app_name
 
