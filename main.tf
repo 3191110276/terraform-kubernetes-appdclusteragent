@@ -263,22 +263,24 @@ roleRef:
   name: appdynamics-cluster-agent
   apiGroup: rbac.authorization.k8s.io
 ---
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: appdynamics-cluster-agent-instrumentation
-subjects:
-  - kind: ServiceAccount
-    name: appdynamics-cluster-agent
-    namespace: {{ .Release.Namespace }}
-roleRef:
-  kind: ClusterRole
-  name: appdynamics-cluster-agent-instrumentation
-  apiGroup: rbac.authorization.k8s.io
----
+
   
 
-
+resource "kubernetes_cluster_role_binding" "appdynamics-cluster-agent-instrumentation" {
+  metadata {
+    name = "appdynamics-cluster-agent-instrumentation"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "appdynamics-cluster-agent-instrumentation"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "appdynamics-cluster-agent"
+    namespace = var.namespace
+  }
+}
 
 
 resource "kubernetes_service_account" "appdynamics-infraviz" {
