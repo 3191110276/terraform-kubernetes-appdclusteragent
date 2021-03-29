@@ -42,81 +42,56 @@ resource "kubernetes_service_account" "appdynamics-operator" {
 }
 
 
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: appdynamics-operator
-  namespace: {{ .Release.Namespace }}
-rules:
-  - apiGroups:
-      - ""
-    resources:
-      - pods
-      - pods/log
-      - endpoints
-      - persistentvolumeclaims
-      - resourcequotas
-      - nodes
-      - events
-      - namespaces
-    verbs:
-      - get
-      - watch
-      - list
-  - apiGroups:
-      - ""
-    resources:
-      - pods
-      - services
-      - configmaps
-      - secrets
-    verbs:
-      - "*"
-  - apiGroups:
-      - apps
-    resources:
-      - statefulsets
-    verbs:
-      - get
-      - watch
-      - list
-  - apiGroups:
-      - apps
-    resources:
-      - deployments
-      - replicasets
-      - daemonsets
-    verbs:
-      - "*"
-  - apiGroups:
-      - "batch"
-      - "extensions"
-    resources:
-      - "jobs"
-    verbs:
-      - "get"
-      - "list"
-      - "watch"
-  - apiGroups:
-      - metrics.k8s.io
-    resources:
-      - pods
-      - nodes
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - appdynamics.com
-    resources:
-      - "*"
-      - clusteragents
-      - infravizs
-      - adams
-      - clustercollectors
-    verbs:
-      - "*"
----
+resource "kubernetes_role" "appdynamics-operator" {
+  metadata {
+    name      = "appdynamics-operator"
+    namespace = var.namespace
+  }
+
+  rule {
+    api_groups     = [""]
+    resources      = ["pods", "pods/log", "endpoints", "persistentvolumeclaims", "resourcequotas", "nodes", "events", "namespaces"]
+    verbs          = ["get", "list", "watch"]
+  }
+  
+  rule {
+    api_groups     = [""]
+    resources      = ["pods", "services", "configmaps", "secrets"]
+    verbs          = ["*"]
+  }
+  
+  rule {
+    api_groups     = ["apps"]
+    resources      = ["statefulsets"]
+    verbs          = ["get", "list", "watch"]
+  }
+  
+  rule {
+    api_groups     = ["apps"]
+    resources      = ["deployments", "replicasets", "daemonsets"]
+    verbs          = ["*"]
+  }
+  
+  rule {
+    api_groups     = ["batch", "extensions"]
+    resources      = ["jobs"]
+    verbs          = ["get", "list", "watch"]
+  }
+  
+  rule {
+    api_groups     = ["metrics.k8s.io"]
+    resources      = ["pods", "nodes"]
+    verbs          = ["get", "list", "watch"]
+  }
+  
+  rule {
+    api_groups     = ["appdynamics.com"]
+    resources      = ["*", "clusteragents", "infravizs", "adams", "clustercollectors"]
+    verbs          = ["*"]
+  }
+}
+
+
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
