@@ -46,11 +46,20 @@ variable "controller_key" {
   description = "The key used for authorizing with the AppDynamics controller. This value can be found in Settings > License > Account > Access Key."
 }
 
+variable "registry" {
+  type        = string
+  default     = "mimaurer"
+  description = "The registry from which the NodeAgent will be pulled."
+}
 
+variable "ns_to_monitor" {
+  type        = list
+  default     = ["default", "kube-system", "appdynamics"]
+  description = "The list of namespaces to monitor."
+}
 
-app_name
-
-registry
-
-ns_to_monitor LIST
-ns_to_instrument LIST
+variable "ns_to_instrument" {
+  type        = list
+  default     = []
+  description = "The list of namespaces to instrument."
+}
