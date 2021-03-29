@@ -416,12 +416,12 @@ resource "helm_release" "appd-crd" {
   
   set {
     name  = "appd_account_name"
-    value = var.appd_account_name
+    value = var.account_name
   }
   
   set {
     name  = "appd_controller_url"
-    value = var.appd_controller_url
+    value = var.controller_url
   }
   
   set {
@@ -436,7 +436,7 @@ resource "helm_release" "appd-crd" {
   
   set {
     name  = "ns_to_monitor"
-    value = "{${join(",", var.appd_ns_to_monitor)}}"
+    value = "{${join(",", var.ns_to_monitor)}}"
   }
   
   set {
@@ -451,6 +451,6 @@ resource "helm_release" "appd-crd" {
   
   set {
     name  = "appd_global_account"
-    value = var.appd_global_account
+    value = var.global_account
   }
 }
