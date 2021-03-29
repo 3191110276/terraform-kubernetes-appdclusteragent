@@ -160,70 +160,44 @@ resource "kubernetes_service_account" "appdynamics-cluster-agent" {
     namespace = var.namespace
   }
 }
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: appdynamics-cluster-agent
-rules:
-  - apiGroups:
-      - ""
-    resources:
-      - pods
-      - pods/log
-      - endpoints
-      - persistentvolumeclaims
-      - resourcequotas
-      - nodes
-      - events
-      - namespaces
-      - services
-      - configmaps
-      - secrets
-    verbs:
-      - get
-      - watch
-      - list
-  - apiGroups:
-      - apps
-    resources:
-      - daemonsets
-      - statefulsets
-      - deployments
-      - replicasets
-    verbs:
-      - get
-      - watch
-      - list
-  - apiGroups:
-      - "batch"
-      - "extensions"
-    resources:
-      - "jobs"
-    verbs:
-      - "get"
-      - "list"
-      - "watch"
-  - apiGroups:
-      - metrics.k8s.io
-    resources:
-      - pods
-      - nodes
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - appdynamics.com
-    resources:
-      - "*"
-      - clusteragents
-      - clustercollectors
-    verbs:
-      - get
-      - list
-      - watch
----
+
+
+resource "kubernetes_cluster_role" "appdynamics-cluster-agent" {
+  metadata {
+    name = "appdynamics-cluster-agent"
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["pods", "pods/log", "endpoints", "persistentvolumeclaims", "resourcequotas", "nodes", "events", "namespaces", "services", "configmaps", "secrets"]
+    verbs      = ["get", "list", "watch"]
+  }
+  
+  rule {
+    api_groups = ["apps"]
+    resources  = ["daemonsets", "statefulsets", "deployments", "replicasets"]
+    verbs      = ["get", "list", "watch"]
+  }
+  
+  rule {
+    api_groups = ["batch", "extensions"]
+    resources  = ["jobs"]
+    verbs      = ["get", "list", "watch"]
+  }
+  
+  rule {
+    api_groups = ["metrics.k8s.io"]
+    resources  = ["pods", "nodes"]
+    verbs      = ["get", "list", "watch"]
+  }
+  
+  rule {
+    api_groups = ["appdynamics.com"]
+    resources  = ["*", "clusteragents", "clustercollectors"]
+    verbs      = ["get", "list", "watch"]
+  }
+}
+
 
 resource "kubernetes_cluster_role" "appdynamics-cluster-agent-instrumentation" {
   metadata {
