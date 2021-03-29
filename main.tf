@@ -18,21 +18,30 @@ terraform {
 ############################################################
 # CREATE BASIC ELEMENTS FOR APPDYNAMICS
 ############################################################
-apiVersion: v1
-kind: Secret
-metadata:
-  name: cluster-agent-secret
-  namespace: {{ .Release.Namespace }}
-stringData:
-  controller-key: {{ .Values.appd_controller_key }}
-  api-user: "{{ .Values.appd_username }}@{{ .Values.appd_account_name }}:{{ .Values.appd_password }}"
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: appdynamics-operator
-  namespace: {{ .Release.Namespace }}
----
+resource "kubernetes_secret" "cluster-agent-secret" {
+  metadata {
+    name      = "cluster-agent-secret"
+    namespace = var.namespace
+  }
+
+  data = {
+    "controller-key" = var.controller_key
+    "api-user"       = "${var.username}@${var.account_name}:${var.password}"
+  }
+}
+
+
+resource "kubernetes_service_account" "appdynamics-operator" {
+  metadata {
+    name      = "appdynamics-operator"
+    namespace = var.namespace
+  }
+  secret {
+    name = "${kubernetes_secret.example.metadata.0.name}"
+  }
+}
+
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -385,22 +394,24 @@ rules:
   - appdynamics-infraviz
   verbs:
   - use
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: appdynamics-infraviz
-  namespace: {{ .Release.Namespace }}
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: appdynamics-infraviz
-subjects:
-- kind: ServiceAccount
-  name: appdynamics-infraviz
-  namespace: {{ .Release.Namespace }}
 
 
+resource "kubernetes_role_binding" "appdynamics-infraviz" {
+  metadata {
+    name      = "appdynamics-infraviz"
+    namespace = var.namespace
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Role"
+    name      = "appdynamics-infraviz"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "appdynamics-infraviz"
+    namespace = var.namespace
+  }
+}
 
 
 ############################################################
@@ -411,7 +422,7 @@ resource "helm_release" "appd-crd" {
 
   chart      = "${path.module}/helm/"
   
-  namespace  = var.appd_namespace
+  namespace  = var.namespace
   
   set {
     name  = "appd_account_name"
