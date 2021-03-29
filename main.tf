@@ -367,20 +367,23 @@ rules:
   - "list"
   - "watch"
 ---
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: appdynamics-infraviz
-subjects:
-- kind: ServiceAccount
-  name: appdynamics-infraviz
-  namespace: {{ .Release.Namespace }}
-roleRef:
-  kind: ClusterRole
-  name: appdynamics-infraviz
-  apiGroup: rbac.authorization.k8s.io
----
 
+ 
+resource "kubernetes_cluster_role_binding" "appdynamics-infraviz" {
+  metadata {
+    name = "appdynamics-infraviz"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "appdynamics-infraviz"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "appdynamics-infraviz"
+    api_group = "rbac.authorization.k8s.io"
+  }
+}
 
 resource "kubernetes_role" "appdynamics-infraviz" {
   metadata {
