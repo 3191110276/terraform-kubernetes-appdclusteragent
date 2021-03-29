@@ -21,13 +21,11 @@ variable "proxy_url" {
 
 variable "username" {
   type        = string
-  default     = ""
   description = "Username used for logging into the AppDynamics account. This will either be your username, or the username of the account created for this integration."
 }
 
 variable "password" {
   type        = string
-  default     = ""
   description = "Password used for logging into the AppDynamics account. This will either be your password, or the password of the account created for this integration."
 }
 
