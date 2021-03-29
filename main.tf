@@ -276,41 +276,59 @@ roleRef:
   name: appdynamics-cluster-agent-instrumentation
   apiGroup: rbac.authorization.k8s.io
 ---
+  
+
+
+
+
 resource "kubernetes_service_account" "appdynamics-infraviz" {
   metadata {
     name      = "appdynamics-infraviz"
     namespace = var.namespace
   }
 }
----
-apiVersion: policy/v1beta1
-kind: PodSecurityPolicy
-metadata:
-  name: appdynamics-infraviz
-  annotations:
-    seccomp.security.alpha.kubernetes.io/allowedProfileNames: "*"
-spec:
-  privileged: true
-  allowPrivilegeEscalation: true
-  allowedCapabilities:
-  - "*"
-  volumes:
-  - "*"
-  hostNetwork: true
-  hostIPC: true
-  hostPID: true
-  hostPorts:
-  - min: 0
-    max: 65535
-  runAsUser:
-    rule: "RunAsAny"
-  seLinux:
-    rule: "RunAsAny"
-  supplementalGroups:
-    rule: "RunAsAny"
-  fsGroup:
-    rule: "RunAsAny"
----
+
+
+resource "kubernetes_pod_security_policy" "appdynamics-infraviz" {
+  metadata {
+    name = "appdynamics-infraviz"
+    annotations = {
+      "seccomp.security.alpha.kubernetes.io/allowedProfileNames" = "*"
+    }
+  }
+  spec {
+    privileged                 = true
+    allow_privilege_escalation = true
+    
+    allowed_capabilities = ["*"]
+    
+    host_network = true
+    host_ipc     = true
+    host_pid     = true
+    host_ports   = [{
+      min = 0
+      max = 65535
+    }]
+    
+    volumes = ["*"]
+
+    run_as_user {
+      rule = "RunAsAny"
+    }
+
+    se_linux {
+      rule = "RunAsAny"
+    }
+
+    supplemental_groups {
+      rule = "RunAsAny"
+    }
+
+    fs_group {
+      rule = "RunAsAny"
+    }
+  }
+}
 
 
 resource "kubernetes_cluster_role" "appdynamics-infraviz" {
