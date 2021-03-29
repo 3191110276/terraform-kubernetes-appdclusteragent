@@ -110,50 +110,82 @@ resource "kubernetes_role_binding" "appdynamics-operator" {
 }
 
 
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: appdynamics-operator
-  namespace: {{ .Release.Namespace }}
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      name: appdynamics-operator
-  template:
-    metadata:
-      labels:
-        name: appdynamics-operator
-    spec:
-      serviceAccountName: appdynamics-operator
-      containers:
-        - name: appdynamics-operator
-          image: docker.io/appdynamics/cluster-agent-operator:0.6.3 #0.6.5
-          ports:
-            - containerPort: 60000
-              name: metrics
-          command:
-            - appdynamics-operator
-          imagePullPolicy: Always
-          resources:
-            limits:
-              cpu: 200m
-              memory: 128Mi
-            requests:
-              cpu: 100m
-              memory: 64Mi
-          env:
-            - name: WATCH_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: OPERATOR_NAME
-              value: "appdynamics-operator"
----
+resource "kubernetes_deployment" "appdynamics-operator" {
+  metadata {
+    name      = "appdynamics-operator"
+    namespace = var.namespace
+  }
+
+  spec {
+    replicas = 1
+
+    selector {
+      match_labels = {
+        name = "appdynamics-operator"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          name = "appdynamics-operator"
+        }
+      }
+
+      spec {
+        container {
+          image = "docker.io/appdynamics/cluster-agent-operator:0.6.3"
+          name  = "appdynamics-operator"
+          
+          service_account_name = "appdynamics-operator"
+          
+          port {
+            container_port = 60000
+            name = "metrics"
+          }
+          
+          command = ["appdynamics-operator"]
+          
+          resources {
+            limits = {
+              cpu    = "200m"
+              memory = "128Mi"
+            }
+            requests = {
+              cpu    = "100m"
+              memory = "64Mi"
+            }
+          }
+          
+          env {
+            name = "WATCH_NAMESPACE"
+            value_from = {
+              field_ref = {
+                field_path = "metadata.namespace"
+              }
+            }
+          }
+          
+          env {
+            name = "POD_NAME"
+            value_from = {
+              field_ref = {
+                field_path = "metadata.name"
+              }
+            }
+          }
+         
+          env {
+            name  = "OPERATOR_NAME"
+            value = "appdynamics-operator"
+          }
+        }
+      }
+    }
+  }
+}
+
+
 resource "kubernetes_service_account" "appdynamics-cluster-agent" {
   metadata {
     name      = "appdynamics-cluster-agent"
