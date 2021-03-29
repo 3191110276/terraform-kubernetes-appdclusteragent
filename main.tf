@@ -36,9 +36,6 @@ resource "kubernetes_service_account" "appdynamics-operator" {
     name      = "appdynamics-operator"
     namespace = var.namespace
   }
-  secret {
-    name = "${kubernetes_secret.example.metadata.0.name}"
-  }
 }
 
 
