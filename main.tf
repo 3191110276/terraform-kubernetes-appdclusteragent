@@ -224,47 +224,41 @@ rules:
       - list
       - watch
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: appdynamics-cluster-agent-instrumentation
-rules:
-  - apiGroups:
-      - ""
-    resources:
-      - pods
-      - pods/exec
-      - secrets
-      - configmaps
-    verbs:
-      - create
-      - update
-      - delete
-  - apiGroups:
-      - apps
-    resources:
-      - daemonsets
-      - statefulsets
-      - deployments
-      - replicasets
-    verbs:
-      - update
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: appdynamics-cluster-agent
-subjects:
-  - kind: ServiceAccount
-    name: appdynamics-cluster-agent
-    namespace: {{ .Release.Namespace }}
-roleRef:
-  kind: ClusterRole
-  name: appdynamics-cluster-agent
-  apiGroup: rbac.authorization.k8s.io
----
 
+resource "kubernetes_cluster_role" "appdynamics-cluster-agent-instrumentation" {
+  metadata {
+    name = "appdynamics-cluster-agent-instrumentation"
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["pods", "pods/exec", "secrets", "configmaps"]
+    verbs      = ["create", "update", "delete"]
+  }
   
+  rule {
+    api_groups = ["apps"]
+    resources  = ["daemonsets", "statefulsets", "deployments", "replicasets"]
+    verbs      = ["update"]
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "appdynamics-cluster-agent" {
+  metadata {
+    name = "appdynamics-cluster-agent"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "appdynamics-cluster-agent"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "appdynamics-cluster-agent"
+    api_group = "rbac.authorization.k8s.io"
+  }
+}
+
 
 resource "kubernetes_cluster_role_binding" "appdynamics-cluster-agent-instrumentation" {
   metadata {
