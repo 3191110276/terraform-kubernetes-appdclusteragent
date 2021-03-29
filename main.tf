@@ -92,19 +92,24 @@ resource "kubernetes_role" "appdynamics-operator" {
 }
 
 
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: appdynamics-operator
-  namespace: {{ .Release.Namespace }}
-subjects:
-  - kind: ServiceAccount
-    name: appdynamics-operator
-roleRef:
-  kind: Role
-  name: appdynamics-operator
-  apiGroup: rbac.authorization.k8s.io
----
+resource "kubernetes_role_binding" "appdynamics-operator" {
+  metadata {
+    name      = "appdynamics-operator"
+    namespace = var.namespace
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Role"
+    name      = "appdynamics-operator"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "appdynamics-operator"
+    api_group = "rbac.authorization.k8s.io"
+  }
+}
+
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -149,11 +154,12 @@ spec:
             - name: OPERATOR_NAME
               value: "appdynamics-operator"
 ---
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: appdynamics-cluster-agent
-  namespace: {{ .Release.Namespace }}
+resource "kubernetes_service_account" "appdynamics-cluster-agent" {
+  metadata {
+    name      = "appdynamics-cluster-agent"
+    namespace = var.namespace
+  }
+}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -270,11 +276,12 @@ roleRef:
   name: appdynamics-cluster-agent-instrumentation
   apiGroup: rbac.authorization.k8s.io
 ---
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: appdynamics-infraviz
-  namespace: {{ .Release.Namespace }}
+resource "kubernetes_service_account" "appdynamics-infraviz" {
+  metadata {
+    name      = "appdynamics-infraviz"
+    namespace = var.namespace
+  }
+}
 ---
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
@@ -304,44 +311,31 @@ spec:
   fsGroup:
     rule: "RunAsAny"
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  creationTimestamp: null
-  name: appdynamics-infraviz
-rules:
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  - nodes
-  - events
-  - namespaces
-  verbs:
-  - get
-  - watch
-  - list
-- apiGroups:
-  - apps
-  resources:
-  - statefulsets
-  - deployments
-  - replicasets
-  - daemonsets
-  verbs:
-  - get
-  - watch
-  - list
-- apiGroups: 
-  - "batch"
-  - "extensions"
-  resources: 
-  - "jobs"
-  verbs: 
-  - "get"
-  - "list"
-  - "watch"
----
+
+
+resource "kubernetes_cluster_role" "appdynamics-infraviz" {
+  metadata {
+    name = "appdynamics-infraviz"
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["pods", "nodes", "events", "namespaces"]
+    verbs      = ["get", "list", "watch"]
+  }
+  
+  rule {
+    api_groups = ["apps"]
+    resources  = ["statefulsets", "deployments", "replicasets", "daemonsets"]
+    verbs      = ["get", "list", "watch"]
+  }
+  
+  rule {
+    api_groups = ["batch", "extensions"]
+    resources  = ["jobs"]
+    verbs      = ["get", "list", "watch"]
+  }
+}
 
  
 resource "kubernetes_cluster_role_binding" "appdynamics-infraviz" {
