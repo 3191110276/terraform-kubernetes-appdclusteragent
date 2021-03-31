@@ -102,7 +102,7 @@ resource "kubernetes_role_binding" "appdynamics-operator" {
   subject {
     kind      = "ServiceAccount"
     name      = "appdynamics-operator"
-    api_group = "rbac.authorization.k8s.io"
+    namespace = var.namespace
   }
 }
 
@@ -258,7 +258,7 @@ resource "kubernetes_cluster_role_binding" "appdynamics-cluster-agent" {
   subject {
     kind      = "ServiceAccount"
     name      = "appdynamics-cluster-agent"
-    api_group = "rbac.authorization.k8s.io"
+    namespace = var.namespace
   }
 }
 
@@ -367,7 +367,7 @@ resource "kubernetes_cluster_role_binding" "appdynamics-infraviz" {
   subject {
     kind      = "ServiceAccount"
     name      = "appdynamics-infraviz"
-    api_group = "rbac.authorization.k8s.io"
+    namespace = var.namespace
   }
 }
 
