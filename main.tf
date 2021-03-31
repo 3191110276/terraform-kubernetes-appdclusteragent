@@ -157,7 +157,7 @@ resource "kubernetes_deployment" "appdynamics-operator" {
           env {
             name = "WATCH_NAMESPACE"
             value_from {
-              field_ref = {
+              field_ref {
                 field_path = "metadata.namespace"
               }
             }
@@ -166,7 +166,7 @@ resource "kubernetes_deployment" "appdynamics-operator" {
           env {
             name = "POD_NAME"
             value_from {
-              field_ref = {
+              field_ref {
                 field_path = "metadata.name"
               }
             }
@@ -304,7 +304,7 @@ resource "kubernetes_pod_security_policy" "appdynamics-infraviz" {
     host_network = true
     host_ipc     = true
     host_pid     = true
-    host_ports   = {
+    host_ports   {
       min = 0
       max = 65535
     }
