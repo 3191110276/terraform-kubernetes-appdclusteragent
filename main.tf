@@ -425,11 +425,6 @@ resource "helm_release" "appd-crd" {
   }
   
   set {
-    name  = "appname"
-    value = var.app_name
-  }
-  
-  set {
     name  = "proxy_url"
     value = var.proxy_url
   }
