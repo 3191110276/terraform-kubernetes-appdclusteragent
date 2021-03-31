@@ -4,7 +4,12 @@
 variable "namespace" {
   type        = string
   default     = "appdynamics"
-  description = "Namespace used for deploying the AppDynamics objects. This namespace has to exist and is not provisioned by this module"
+  description = "Namespace used for deploying the AppDynamics objects. This namespace has to exist and is not provisioned by this module."
+}
+
+variable "cluster_name" {
+  type        = string
+  description = "Name of the Kubernetes cluster in AppDynamics. The value in this field determines how the cluster will be called in the AppDynamics UI."
 }
 
 variable "controller_url" {
