@@ -130,11 +130,11 @@ resource "kubernetes_deployment" "appdynamics-operator" {
       }
 
       spec {
+        service_account_name = "appdynamics-operator"
+        
         container {
           image = "docker.io/appdynamics/cluster-agent-operator:0.6.3"
           name  = "appdynamics-operator"
-          
-          service_account_name = "appdynamics-operator"
           
           port {
             container_port = 60000
@@ -156,7 +156,7 @@ resource "kubernetes_deployment" "appdynamics-operator" {
           
           env {
             name = "WATCH_NAMESPACE"
-            value_from = {
+            value_from {
               field_ref = {
                 field_path = "metadata.namespace"
               }
@@ -165,7 +165,7 @@ resource "kubernetes_deployment" "appdynamics-operator" {
           
           env {
             name = "POD_NAME"
-            value_from = {
+            value_from {
               field_ref = {
                 field_path = "metadata.name"
               }
@@ -304,10 +304,10 @@ resource "kubernetes_pod_security_policy" "appdynamics-infraviz" {
     host_network = true
     host_ipc     = true
     host_pid     = true
-    host_ports   = [{
+    host_ports   = {
       min = 0
       max = 65535
-    }]
+    }
     
     volumes = ["*"]
 
