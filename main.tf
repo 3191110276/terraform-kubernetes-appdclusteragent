@@ -415,6 +415,11 @@ resource "helm_release" "appd-crd" {
   namespace  = var.namespace
   
   set {
+    name  = "appname"
+    value = var.cluster_name
+  }
+  
+  set {
     name  = "appd_account_name"
     value = var.account_name
   }
