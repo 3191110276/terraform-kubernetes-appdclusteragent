@@ -441,7 +441,7 @@ resource "helm_release" "appd-crd" {
   
   set {
     name  = "ns_to_instrument"
-    value = var.ns_to_instrument
+    value = "{${join(",", var.ns_to_instrument)}}"
   }
   
   set {
